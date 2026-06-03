@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 基礎設施供應鏈地圖 + FAQ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans TC','SF Pro Display',-apple-system,sans-serif;background:#0a0a0f;color:#e4e4e7;min-height:100vh;padding:20px}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:22px;font-weight:700;color:#fafafa;letter-spacing:-0.5px}
+.subtitle{font-size:13px;color:#71717a;margin-top:4px}
+.mode-tabs{display:flex;gap:0;margin:20px 0 16px;border-bottom:1px solid #27272a}
+.mode-tab{padding:10px 20px;border:none;cursor:pointer;font-size:14px;font-weight:600;background:none;color:#71717a;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s}
+.mode-tab.active{color:#fafafa;border-bottom-color:#3b82f6}
+.search-box{width:100%;padding:10px 14px;background:#18181b;border:1px solid #27272a;border-radius:8px;color:#e4e4e7;font-size:14px;outline:none;font-family:inherit;margin:0 0 6px}
+.search-box::placeholder{color:#52525b}
+.search-results{background:#18181b;border:1px solid #27272a;border-radius:8px;max-height:240px;overflow-y:auto;display:none}
+.search-results.show{display:block}
+.sr-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid #1f1f23;font-size:13px;transition:background .15s}
+.sr-item:hover{background:#27272a}
+.sr-item b{font-weight:600}
+.sr-item .meta{color:#71717a;margin-left:8px}
+.tabs{display:flex;gap:6px;margin:14px 0 20px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#1f1f23;color:#a1a1aa;font-family:inherit;transition:all .2s}
+.tab.active{color:#fff}
+.chain-box{background:#111114;border:1px solid #1f1f23;border-radius:12px;overflow:hidden}
+.chain-header{padding:16px 20px;border-bottom:1px solid #1f1f23;display:flex;align-items:center;gap:10px}
+.chain-header .icon{font-size:24px}
+.chain-header h2{font-size:17px;font-weight:700;color:#fafafa}
+.chain-header .info{font-size:12px;color:#71717a}
+.layer{border-bottom:1px solid #1f1f23}
+.layer:last-child{border-bottom:none}
+.layer-name{padding:10px 20px;background:#0d0d11;display:flex;align-items:center;gap:8px}
+.layer-bar{width:3px;height:14px;border-radius:2px}
+.layer-name span{font-size:13px;font-weight:600;color:#a1a1aa}
+.companies{padding:8px 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.co-btn{padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;border:1px solid #27272a;background:#18181b;color:#d4d4d8;font-family:inherit;transition:all .15s}
+.co-btn:hover{border-color:#52525b}
+.co-btn.selected{background:var(--cc-dim);border-color:var(--cc);color:#fafafa}
+.co-btn.highlight{border-color:#eab308;background:#eab30811;color:#eab308}
+.detail{margin-top:16px;padding:16px 20px;background:#111114;border:1px solid var(--cc-dim);border-radius:12px;border-left:3px solid var(--cc);display:none}
+.detail.show{display:block}
+.detail h3{font-size:16px;font-weight:700;color:#fafafa}
+.detail .path{font-size:12px;color:#71717a;margin-top:4px}
+.detail .close{background:none;border:none;color:#71717a;cursor:pointer;font-size:18px;padding:0;font-family:inherit}
+.detail p{font-size:14px;line-height:1.7;color:#d4d4d8;margin-top:12px}
+.detail-top{display:flex;justify-content:space-between;align-items:flex-start}
+.insights{margin-top:28px}
+.insights h3{font-size:15px;font-weight:700;color:#fafafa;margin-bottom:12px}
+.ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:600px){.ins-grid{grid-template-columns:1fr}.faq-a{font-size:13px!important}}
+.ins-card{padding:12px 14px;background:#111114;border:1px solid #1f1f23;border-radius:8px}
+.ins-card .t{font-size:13px;font-weight:600;color:#fafafa}
+.ins-card .d{font-size:12px;color:#71717a;margin-top:4px;line-height:1.5}
+.footer{font-size:11px;color:#3f3f46;text-align:center;margin-top:24px;padding-bottom:20px}
+.faq-section{display:none}
+.faq-section.show{display:block}
+.map-section{display:none}
+.map-section.show{display:block}
+.faq-search{width:100%;padding:10px 14px;background:#18181b;border:1px solid #27272a;border-radius:8px;color:#e4e4e7;font-size:14px;outline:none;font-family:inherit;margin:0 0 16px}
+.faq-search::placeholder{color:#52525b}
+.faq-cats{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.faq-cat{padding:6px 12px;border-radius:6px;border:1px solid #27272a;cursor:pointer;font-size:12px;font-weight:600;background:#18181b;color:#a1a1aa;font-family:inherit;transition:all .2s}
+.faq-cat.active{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.faq-item{background:#111114;border:1px solid #1f1f23;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.faq-q{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:background .15s}
+.faq-q:hover{background:#18181b}
+.faq-q-text{font-size:14px;font-weight:600;color:#e4e4e7;flex:1}
+.faq-q-cat{font-size:11px;padding:3px 8px;border-radius:4px;background:#27272a;color:#71717a;white-space:nowrap}
+.faq-arrow{color:#52525b;font-size:14px;transition:transform .2s}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;font-size:14px;line-height:1.8;color:#a1a1aa}
+.faq-item.open .faq-a{padding:0 18px 16px;max-height:3000px}
+.faq-a strong{color:#d4d4d8;font-weight:600}
+.faq-a .point{margin:6px 0;padding-left:12px;border-left:2px solid #27272a}
+.faq-count{font-size:12px;color:#52525b;margin-bottom:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div><h1>AI 基礎設施供應鏈地圖</h1><p class="subtitle">資料來源：推特書籤週報 04/09 – 06/01 ｜ David's Research Project</p></div>
+<div class="mode-tabs">
+<button class="mode-tab active" onclick="switchMode('map')">🗺️ 供應鏈地圖</button>
+<button class="mode-tab" onclick="switchMode('faq')">❓ FAQ 學習筆記</button>
+</div>
+
+<!-- MAP SECTION -->
+<div class="map-section show" id="mapSection">
+<input class="search-box" type="text" placeholder="搜尋公司名稱或關鍵字..." id="search">
+<div class="search-results" id="searchResults"></div>
+<div class="tabs" id="tabs"></div>
+<div id="chainContent"></div>
+<div class="detail" id="detail"><div class="detail-top"><div><h3 id="detailTitle"></h3><p class="path" id="detailPath"></p></div><button class="close" onclick="closeDetail()">✕</button></div><p id="detailNote"></p></div>
+<div class="insights"><h3>💡 跨鏈 Insight</h3><div class="ins-grid" id="insightsGrid"></div></div>
+</div>
+
+<!-- FAQ SECTION -->
+<div class="faq-section" id="faqSection">
+<input class="faq-search" type="text" placeholder="搜尋問題或關鍵字..." id="faqSearch" oninput="filterFaq()">
+<div class="faq-cats" id="faqCats"></div>
+<div class="faq-count" id="faqCount"></div>
+<div id="faqList"></div>
+</div>
+
+<p class="footer">最後更新：2026/06/02 ｜ 分析師：Jukan, Serenity, 駿HaYao, ManChurius Hao, Art of Speculation, F22, Yiran, GaeTano, 戈多Godot, Zephyr</p>
+</div>
+<script>
+const FAQS=[
+{cat:"NVIDIA",q:"NVIDIA 這次財報跟以往不同的點？為什麼點名的廠商都會暴漲？",a:`<strong>三個最大差異：</strong>
+<div class="point">1. 業務敘事直接重寫：第一次明確拆成 Data Center + Edge Computing（Physical AI）。Chat AI → Agentic AI → Physical AI，每階段賣不同東西。</div>
+<div class="point">2. Vera CPU 獨立成 $200 億市場：性能超越 x86，直接進攻 Intel 地盤。250 萬顆 × 8 個 SoCAMM 插槽，光 LPDDR5 需求就接近手機全年用量。</div>
+<div class="point">3. N3 產能從 Rubin 挪去做 Vera CPU：判斷 Agentic AI 的 CPU 需求比下一代 GPU 更急。</div>
+<strong>為什麼被點名的公司會暴漲：</strong>
+<div class="point">NVIDIA 現在就是 AI capex 的定價錨。法說點名一個方向 = 幫整條供應鏈「定義 TAM」。被點名 ≈ 拿到一張 TAM 認證書，市場立刻重新估算未來 2-3 年的營收天花板。加上供應商被過去週期燒怕了，寧願讓 ASP 漲也不擴產，所以一旦需求被確認，價格和利潤率同時往上走。</div>`},
+{cat:"瓶頸",q:"記憶體、ABF、MLCC、CPO 為什麼是供應鏈的瓶頸？",a:`<strong>記憶體：</strong>需求暴增 + 產能被 HBM 吃掉。高利潤產品（HBM）把低利潤產品（DDR4、2D NAND）的產能擠掉，兩邊同時缺。
+<strong>ABF 基板：</strong>AI 晶片變大變厚，基板面積和層數倍增（3+3 到 11+11 層）。膜材 95% 壟斷在味之素一家，能做的基板廠就那幾家。
+<strong>MLCC：</strong>AI 伺服器用量是傳統的好幾倍（800V DC 架構需上萬顆）。供應商被過去燒怕，Murata 甚至不再為 IT 分配額外產能。
+<strong>CPO：</strong>GPU 集群從幾千張擴到幾十萬張，銅線在 800G 以上撞物理極限。但 CPO 供應鏈每個環節都卡：封裝良率、CW Laser 產能、特種光纖一年漲 10 倍。
+<div class="point"><strong>共同邏輯：</strong>AI 需求是指數級的，但擴產週期是線性的（2-3 年蓋廠），很多環節有單點壟斷，供應商又不敢激進擴產。</div>`},
+{cat:"記憶體",q:"TPU 或哪一種設計可以降低 HBM 的需求量？",a:`目前沒有任何技術能真正「取代」HBM，比較準確的說法是降低依賴或提高效率。
+<strong>PIM/CIM（存算一體）— 最根本：</strong>把計算直接放在記憶體裡做，資料不用搬。Samsung HBM-PIM 展示 2x 性能 + 70% 能耗降低。但精度、標準化、軟體還沒到位，3-5 年後的事。
+<strong>CXL 記憶體池化：</strong>讓機架記憶體被多個 GPU 共享調度。不減少總量但提高利用率。Astera Labs 市佔 55%。
+<strong>推理專用 ASIC（Groq LPU）：</strong>用 SRAM 取代 HBM，速度更快但成本更高，只適合推理不適合訓練。
+<strong>Google TPU：</strong>也用 HBM，優勢在 JAX/XLA 軟體層更有效率地管理記憶體分配。
+<strong>軟體層：</strong>量化（FP16→INT4）砍記憶體需求到四分之一，MoE 只啟動部分模型。但模型也在快速變大。
+<div class="point"><strong>判斷：</strong>短期 1-2 年沒有技術能降低 HBM 需求。中期 3-5 年 PIM/CIM 有機會改變規則。長期光互連 + PIM/CIM + CXL 三者成熟後，記憶體可能從「被動儲存」變成「主動運算節點」。</div>`},
+{cat:"ABF",q:"欣興、景碩、臻鼎的個別優勢在哪？跟記憶體相比需求量如何？",a:`<strong>欣興（Unimicron）：</strong>規模最大、技術最全面。NVIDIA + Intel 雙吃，不管 CoWoS 還是 EMIB-T 勝出都有位置。4 月營收 NT$139.3 億創歷史新高。
+<strong>景碩（Kinsus）：</strong>ASE 集團，跟 NVIDIA 合作最深。正在幫 NVIDIA 開發「多種不同」載板，多規格開發能力是差異化。
+<strong>臻鼎（Zhen Ding）：</strong>全球最大 PCB 廠，客戶最分散。同時切入 Google TPU + 中國 AI 晶片，如果市場不是 NVIDIA 一家獨大，臻鼎的分散度反而是優勢。
+<strong>跟記憶體比：</strong>DRAM $1,200 億 vs ABF $100-150 億，量級差 10 倍。但 ABF 的「瓶頸感」更強：供應集中度更高（膜材 95% 味之素）、擴產更久（味之素第三廠 2028 動工 2032 量產）、乘數效應更大（每升級一代層數倍增）、沒有現貨市場緩衝。`},
+{cat:"CPO",q:"CPO 為什麼重要？目前的關鍵廠商和節點？",a:`GPU 算力已經夠強，但資料在 GPU 之間流動的速度跟不上。銅線在 800G 以上撞物理極限，光的能耗約銅的十分之一。CPO 把光學元件直接做進晶片封裝，光電轉換距離最短。
+<strong>六層供應鏈：</strong>
+<div class="point"><strong>材料：</strong>AXTI（InP 基板）、IQE（磊晶）、NGK（TFLN 晶圓）</div>
+<div class="point"><strong>雷射：</strong>SIVE（DFB 雷射設計，chokepoint）、Win Semi（代工）、Lumentum（產能全押 EML）</div>
+<div class="point"><strong>光引擎：</strong>SOI（晶圓代工）、Ayar Labs、Celestial AI→Marvell、FOCI（FAU）、Lightmatter</div>
+<div class="point"><strong>檢測：</strong>MSScorp（光損檢測專利）、AEHR（burn-in 設備）</div>
+<div class="point"><strong>DSP：</strong>Marvell、Broadcom、AAOI（光模組+雷射一體）</div>
+<div class="point"><strong>封裝：</strong>訊芯-KY（Edge coupling）、ASE</div>
+每一層都有瓶頸，每一層的供應商都很少。越上游規模越小、股價越容易暴漲暴跌。`},
+{cat:"MLCC",q:"國巨能吃到高端 MLCC / 矽電容這塊餅嗎？",a:`<strong>矽電容：基本上吃不到。</strong>完全不同技術路線，全球只有 TSMC（自用）、Murata、SEMCO 三家。
+<strong>高端 AI 伺服器 MLCC：很難直接切入核心。</strong>需要高容量/小尺寸/低ESL/高耐壓/耐高溫，還要參與客戶 PDN 仿真。目前掌握在村田、太陽誘電、SEMCO、TDK 手上。
+<strong>但有間接受益路徑：</strong>Tier 1 往高端走後，中低端空出來（Zephyr 稱為 Macronix effect）。國巨在車用、工業、消費電子中端的市佔有機會擴大，ASP 也跟漲。
+<div class="point">Zephyr 特別提到 MLCC 生產設備和原材料供應商可能是這波 capex 最大受益者。</div>`},
+{cat:"MLCC",q:"村田製作所的業務和優勢？",a:`MLCC 全球龍頭，月產 1,600 億顆，市佔 25%。正在從「MLCC 零件商」轉型成「AI 伺服器供電系統整合商」。
+<strong>三條 AI 成長線：</strong>
+<div class="point">1. 高端 MLCC：800 層、sub-0.5µm 銅電極、006003 最小尺寸。漲價 15-35%。AI 伺服器 MLCC 到 2030 年需求 3.3 倍。</div>
+<div class="point">2. 矽電容：跟 Ibiden 綁定供應 Intel EMIB。全產品線 + 設計階段支援是最大差異化。</div>
+<div class="point">3. 電源模組：2026 年開始量產，FY2027 前兩年預計 500 億日圓營收。MLCC + 矽電容 + 電感整合。</div>
+<strong>護城河：</strong>材料科學累積（幾十年）+ 客戶端 PDN 協同設計 + 全產品線整合。最大挑戰不是競爭對手，是自己的產能能不能跟上需求。📌 買進觀察名單。`},
+{cat:"公司",q:"Marvell 的業務和前景？",a:`AI 數據基礎設施的「平台型」晶片公司，不做 GPU 不做記憶體，做讓算力流動和連接的一切。
+<strong>兩條主線：</strong>
+<div class="point">1. 光互連/DSP：800G/1.6T 領導者。$32.5 億收購 Celestial AI，拿到光子層核心技術。</div>
+<div class="point">2. Custom Silicon：18 個活躍專案，AWS Trainium + Google TPU + Microsoft Maia。FY2026 營收 $15 億，FY2028 翻倍。</div>
+<strong>NVIDIA 投 $20 億 + NVLink Fusion：</strong>Marvell 的客製晶片可以直接插進 NVIDIA 機架。同時綁 NVIDIA 生態系和 hyperscaler。
+<strong>護城河：</strong>不管 NVIDIA 贏還是 Custom ASIC 贏，Marvell 都有位置。用比喻講：NVIDIA 蓋大樓，Marvell 蓋水管電線光纖。
+<strong>風險：</strong>估值不便宜（P/E 49.75x）、客戶集中度（AWS）、NVIDIA 可能用合作限制 Custom XPU 發展方向。`},
+{cat:"公司",q:"Nokia 目前的業務和優勢？",a:`已經不是手機公司。現在的定位：用光纖把 AI 資料中心連起來。
+<strong>核心引擎：</strong>Optical Networks Q1 成長 20%，從 €16.36 億成長至 €30.18 億。Infinera 收購（2024）補齊相干光傳輸技術。AI & Cloud 營收年增 49%，Q1 拿 €10 億訂單。
+<strong>NVIDIA 投 $10 億：</strong>跟 Marvell 邏輯類似，NVIDIA 補齊生態系裡 GPU 以外的環節。
+<strong>AI-RAN 第二曲線：</strong>三層架構（AI for/and/on RAN），T-Mobile 測試在 Grace Hopper 200 上同時跑 AI 和 RAN。
+<strong>護城河：</strong>相干光技術 + 12-18 個月交期的客戶鎖定 + 端到端產品線 + 電信商既有關係。
+<strong>注意：</strong>InP 元件供應鏈限制（跟 CPO 搶同一批 AXTI 材料）。2026 年股價已漲 73%。`},
+{cat:"公司",q:"NGK 5333 是什麼？",a:`NGK Corporation，1919 年成立的日本陶瓷公司（原名日本碍子）。本業做汽車排氣觸媒、柴油過濾器等。
+<strong>為什麼跟光通訊有關：</strong>掌握 TFLN（薄膜鈮酸鋰）晶圓的工業級量產能力。TFLN 是下一代光調變器的最佳材料：1V 調變、100GHz 頻寬、極低光損。
+<strong>8 吋突破：</strong>之前只有 4/6 吋，NGK 做到 8 吋，可進入大規模量產。OFC 2026 展會上所有 Tier-1 光收發器廠商（AAOI、Coherent、Lumentum）都圍著 NGK 攤位。
+<strong>下游已加速：</strong>HyperLight + UMC + Jabil 合作把 TFLN 推向 hyperscale 量產。CEO 說「TFLN 作為小眾技術的時代結束了」。
+<strong>定位：</strong>跟 AXTI 互補——AXTI 做雷射材料（InP），NGK 做調變器材料（TFLN）。一個負責發光，一個負責把資料寫到光上面。Serenity 列在「實質性壟斷」名單。52 週漲超 3 倍。`},
+{cat:"瓶頸",q:"整體的產業敘事和 Insight 是什麼？",a:`<strong>Insight 1：瓶頸逐層剝洋蔥</strong>
+<div class="point">第一期：記憶體 + CPO 良率 → 第二期：ABF 基板 + 光纖 + MLCC → 第三批：矽電容 + PDN + 設備。GPU → 記憶體 → 基板 → 供電 → 光互連 → 設備，每層解決後下一層浮現。供應商被過去燒怕了（Supply Chain Inheritance），寧可漲價不擴產。</div>
+<strong>Insight 2：EMIB-T 重塑格局</strong>
+<div class="point">Google v8e TPU + SpaceX/xAI 採用 Intel EMIB-T。帶動矽電容（SEMCO 從零到 $10 億）、Ibiden 基板、Murata 供應鏈。這是跟 CoWoS 平行但完全不同的供應鏈。</div>
+<strong>Insight 3：記憶體缺到 2028</strong>
+<div class="point">Micron EVP 說新產能最快 2027 底上線。長約鎖量悖論加速漲價。TrendForce 預估 DRAM 營收 2026 年增 303%。CXMT 進入 Corsair DDR5 是缺口的直接證據。</div>
+<strong>Insight 4：光互連從概念到工程</strong>
+<div class="point">從 server-to-server 推進到 chip-to-chip。OSAT 高管說「明確軌跡，只是時間問題」。Marvell DSP 在 800G/1.6T 重要性指數級提升。</div>`}
+];
+
+const CHAINS={memory:{label:"記憶體",icon:"💾",color:"#2563eb",layers:[{name:"DRAM / HBM",companies:[{ticker:"SK Hynix",note:"HBM 市佔 57-62%，營業利潤率 72%，可用產能歸零",flag:"🇰🇷"},{ticker:"Samsung DS",note:"產線轉 HBM/DDR5，停產 2D NAND，MX vs DS 內部矛盾",flag:"🇰🇷"},{ticker:"Micron",note:"PIM/CIM 最被低估的上漲空間，HBM-PIM 展示 2x 性能",flag:"🇺🇸"},{ticker:"南亞科 2408",note:"DDR4 結構性缺貨到年底，打入 Vera Rubin HBM，Q1 毛利率 67%",flag:"🇹🇼"}]},{name:"NAND",companies:[{ticker:"旺宏",note:"2D NAND 市佔擴大，4月營收年增 153.7%，MLC eMMC 無有效競爭",flag:"🇹🇼"},{ticker:"華邦電",note:"SLC NAND 位元成長 80%+，24nm 新製程 Q2 起提升",flag:"🇹🇼"}]},{name:"CXL / 記憶體介面",companies:[{ticker:"Astera Labs",note:"CXL 重定時器市佔 55%，毛利率 76.4%",flag:"🇺🇸"},{ticker:"Montage 瀾起",note:"CPU 採用率提升 + CXL 佈局，Jukan 偏好勝過 Rambus",flag:"🇨🇳"}]},{name:"中國記憶體",companies:[{ticker:"CXMT 長鑫",note:"已進入 Corsair DDR5 供應鏈，量產 8000MT/s DDR5",flag:"🇨🇳"}]}]},abf:{label:"ABF / 封裝",icon:"📦",color:"#7c3aed",layers:[{name:"ABF 膜材",companies:[{ticker:"Ajinomoto 味之素",note:"全球 95%+ 壟斷，Q3 漲 30%，第三廠 2028→2032",flag:"🇯🇵"},{ticker:"Nittobo",note:"T-Glass 玻纖，不願漲價",flag:"🇯🇵"}]},{name:"ABF 基板製造",companies:[{ticker:"欣興 Unimicron",note:"規模最大，NVIDIA+Intel 雙吃，ABF 擴產 40%",flag:"🇹🇼"},{ticker:"景碩 Kinsus",note:"幫 NVIDIA 開發多種不同載板，合作深度最深",flag:"🇹🇼"},{ticker:"臻鼎 Zhen Ding",note:"全球最大 PCB 廠，Google TPU 認證 + 中國 AI，升評 OW",flag:"🇹🇼"},{ticker:"南電",note:"EPS 上調，受益 ABF 供需缺口擴大",flag:"🇹🇼"},{ticker:"Ibiden",note:"EMIB-T 基板第一，投資 2200 億日圓，2027 稼動",flag:"🇯🇵"}]},{name:"封裝架構",companies:[{ticker:"TSMC CoWoS",note:"主流 AI 晶片封裝，COUPE 平台佈局光學",flag:"🇹🇼"},{ticker:"Intel EMIB-T",note:"替代路線，Google v8e TPU + SpaceX/xAI 已採用",flag:"🇺🇸"}]}]},optical:{label:"CPO / 矽光子",icon:"📡",color:"#dc2626",layers:[{name:"材料",companies:[{ticker:"AXTI",note:"InP 基板壟斷，$14→$140，國家級供應鏈漏洞",flag:"🇺🇸"},{ticker:"IQE",note:"外延晶圓，在 InP 上長磊晶層",flag:"🇬🇧"},{ticker:"NGK 5333",note:"TFLN 晶圓壟斷者，8 吋突破，光調變器材料",flag:"🇯🇵"}]},{name:"雷射光源",companies:[{ticker:"SIVE",note:"CPO chokepoint，DFB 雷射不可互換，主要玩家都通過 SIVE",flag:"🇸🇪"},{ticker:"Win Semi 穩懋",note:"雷射晶圓代工瓶頸",flag:"🇹🇼"},{ticker:"Lumentum",note:"產能全押 EML，CW Laser 不做了",flag:"🇺🇸"}]},{name:"矽光子 / 光引擎",companies:[{ticker:"SOI Soitec",note:"SOI 基板主導，矽光子晶圓代工，$45→$170",flag:"🇫🇷"},{ticker:"Ayar Labs",note:"NVIDIA 投資，光學 I/O chiplet",flag:"🇺🇸"},{ticker:"Celestial AI → Marvell",note:"光子互連 fabric，$32.5 億被收購",flag:"🇺🇸"},{ticker:"FOCI 上詮 3363",note:"FAU 與台積電合作 3 年，⚠️ 采鈺整合風險",flag:"🇹🇼"},{ticker:"Lightmatter",note:"光子互連平台 Passage",flag:"🇺🇸"}]},{name:"檢測 / 設備",companies:[{ticker:"MSScorp 6830",note:"CPO 良率檢測專利，實質性壟斷",flag:"🇹🇼"},{ticker:"AEHR",note:"光子 burn-in 設備，hyperscaler 破紀錄訂單",flag:"🇺🇸"}]},{name:"DSP / 光模組",companies:[{ticker:"Marvell MRVL",note:"DSP + Celestial AI + Custom ASIC，NVIDIA 投 $20 億",flag:"🇺🇸"},{ticker:"Broadcom",note:"DSP + 最早出貨 CPO",flag:"🇺🇸"},{ticker:"AAOI",note:"Serenity 最愛，1.6T 訂單，⚠️ ATM 稀釋",flag:"🇺🇸"}]},{name:"CPO 封裝",companies:[{ticker:"訊芯-KY 6451",note:"鴻海集團，Edge coupling，51.2T 出貨",flag:"🇹🇼"},{ticker:"ASE 日月光",note:"全球最大 OSAT",flag:"🇹🇼"}]},{name:"光傳輸",companies:[{ticker:"Nokia NOK",note:"Optical +20%，Infinera 收購，NVIDIA 投 $10 億",flag:"🇫🇮"}]}]},mlcc:{label:"MLCC / 被動元件",icon:"🔋",color:"#ea580c",layers:[{name:"MLCC 龍頭",companies:[{ticker:"Murata 6981",note:"月產 1600 億顆，市佔 25%，漲 15-35%，轉型 AI 供電整合商 📌觀察名單",flag:"🇯🇵",hl:true},{ticker:"SEMCO",note:"唯一矽電容+基板 turnkey，EMIB 訂單 $10 億+",flag:"🇰🇷"},{ticker:"Taiyo Yuden",note:"高端 MLCC，漲 6-13%",flag:"🇯🇵"},{ticker:"TDK",note:"MLCC 第四大",flag:"🇯🇵"}]},{name:"Tier 2",companies:[{ticker:"國巨 Yageo",note:"中端強項，受益 Macronix effect",flag:"🇹🇼"}]},{name:"設備 / 原材料",companies:[{ticker:"MLCC 設備商",note:"Zephyr 認為最大受益者",flag:"🌐"}]}]},gpu:{label:"GPU / ASIC / CPU",icon:"🖥️",color:"#059669",layers:[{name:"GPU",companies:[{ticker:"NVIDIA",note:"全棧：GPU+CPU+Edge，Vera CPU $200 億，F1Q $806 億",flag:"🇺🇸"},{ticker:"AMD",note:"Helios 2H26 量產，Microsoft 第二平台，Anthropic MI450",flag:"🇺🇸"}]},{name:"Custom ASIC",companies:[{ticker:"Marvell MRVL",note:"18 專案，AWS+Google+Microsoft+Meta",flag:"🇺🇸"},{ticker:"Broadcom",note:"Google TPU 合作夥伴",flag:"🇺🇸"},{ticker:"聯發科 MTK",note:"SpaceX+xAI ASIC，Intel 14A+EMIB-T",flag:"🇹🇼"}]},{name:"CPU",companies:[{ticker:"NVIDIA Vera",note:"$200 億市場，超越 x86，SoCAMM 需求接近手機全年",flag:"🇺🇸"},{ticker:"Qualcomm",note:"LPU-like ASIC 2026 底，Nuvia CPU 2027H2",flag:"🇺🇸"},{ticker:"Intel",note:"14A + EMIB-T，爭取代工客戶",flag:"🇺🇸"}]},{name:"測試",companies:[{ticker:"Advantest",note:"GPU 測試步驟指數成長",flag:"🇯🇵"}]}]},infra:{label:"基礎設施",icon:"☁️",color:"#0891b2",layers:[{name:"Neocloud",companies:[{ticker:"NBIS Nebius",note:"Serenity 偏好，NVIDIA 投入資金",flag:"🇳🇱"},{ticker:"IREN",note:"⚠️ 行銷公司，持續稀釋",flag:"🇺🇸"}]},{name:"AI-RAN / 邊緣",companies:[{ticker:"Nokia",note:"AI-RAN 三層，T-Mobile 測試 Grace Hopper",flag:"🇫🇮"},{ticker:"Qualcomm",note:"低功耗 Physical AI",flag:"🇺🇸"}]}]}};
+
+const INSIGHTS=[{title:"瓶頸逐層剝洋蔥",desc:"GPU → 記憶體 → 基板 → 供電 → 光互連 → 設備"},{title:"Supply Chain Inheritance",desc:"AI capex 繼承 EV 供應鏈，供應商寧可漲價不擴產"},{title:"EMIB-T 重塑格局",desc:"Google TPU + SpaceX/xAI 採用，帶動矽電容和 Ibiden"},{title:"記憶體缺到 2028",desc:"新產能最快 2027 底，長約鎖量悖論加速漲價"},{title:"光互連概念→工程",desc:"server-to-server → chip-to-chip，明確軌跡"},{title:"NVIDIA 定義 TAM",desc:"法說點名 = 供應鏈 TAM 認證書"}];
+
+let activeChain="optical",selectedTicker=null,currentMode="map",activeFaqCat="全部";
+const allCompanies=[];
+Object.entries(CHAINS).forEach(([k,c])=>c.layers.forEach(l=>l.companies.forEach(co=>allCompanies.push({...co,chainKey:k,chain:c.label,layer:l.name,color:c.color}))));
+const faqCats=["全部",...[...new Set(FAQS.map(f=>f.cat))]];
+
+function switchMode(mode){currentMode=mode;document.querySelectorAll('.mode-tab').forEach((t,i)=>t.className='mode-tab'+(i===(mode==='map'?0:1)?' active':''));document.getElementById('mapSection').className='map-section'+(mode==='map'?' show':'');document.getElementById('faqSection').className='faq-section'+(mode==='faq'?' show':'');if(mode==='faq')renderFaq()}
+
+function renderMap(){
+const tabs=document.getElementById("tabs");tabs.innerHTML="";
+Object.entries(CHAINS).forEach(([k,c])=>{const b=document.createElement("button");b.className="tab"+(activeChain===k?" active":"");b.textContent=c.icon+" "+c.label;b.style.background=activeChain===k?c.color:"#1f1f23";b.onclick=()=>{activeChain=k;selectedTicker=null;renderMap()};tabs.appendChild(b)});
+const chain=CHAINS[activeChain];
+document.documentElement.style.setProperty("--cc",chain.color);document.documentElement.style.setProperty("--cc-dim",chain.color+"22");
+const content=document.getElementById("chainContent");
+let html=`<div class="chain-box"><div class="chain-header"><span class="icon">${chain.icon}</span><div><h2>${chain.label}</h2><p class="info">${chain.layers.length} 層 ｜ ${chain.layers.reduce((a,l)=>a+l.companies.length,0)} 家公司</p></div></div>`;
+chain.layers.forEach((layer)=>{
+html+=`<div class="layer"><div class="layer-name"><div class="layer-bar" style="background:${chain.color}"></div><span>${layer.name}</span></div><div class="companies">`;
+layer.companies.forEach(co=>{const sel=selectedTicker===co.ticker;const cls="co-btn"+(sel?" selected":"")+(co.hl?" highlight":"");const bg=sel?chain.color+"22":co.hl?"#eab30811":"#18181b";const bc=sel?chain.color:co.hl?"#eab308":"#27272a";const clr=sel?"#fafafa":co.hl?"#eab308":"#d4d4d8";html+=`<button class="${cls}" style="background:${bg};border-color:${bc};color:${clr}" onclick="selectCompany('${co.ticker.replace(/'/g,"\\'")}')">${co.flag} ${co.ticker}</button>`});
+html+=`</div></div>`});html+=`</div>`;content.innerHTML=html;
+const detail=document.getElementById("detail");
+if(selectedTicker){const co=allCompanies.find(c=>c.ticker===selectedTicker);if(co){document.getElementById("detailTitle").textContent=co.flag+" "+co.ticker;document.getElementById("detailPath").textContent=co.chain+" › "+co.layer;document.getElementById("detailNote").textContent=co.note;detail.className="detail show"}}else{detail.className="detail"}
+}
+function selectCompany(ticker){selectedTicker=selectedTicker===ticker?null:ticker;const co=allCompanies.find(c=>c.ticker===ticker);if(co&&co.chainKey!==activeChain)activeChain=co.chainKey;renderMap()}
+function closeDetail(){selectedTicker=null;renderMap()}
+function renderFaq(){
+const catsEl=document.getElementById("faqCats");catsEl.innerHTML="";
+faqCats.forEach(cat=>{const b=document.createElement("button");b.className="faq-cat"+(activeFaqCat===cat?" active":"");b.textContent=cat;b.onclick=()=>{activeFaqCat=cat;renderFaq()};catsEl.appendChild(b)});
+filterFaq();
+}
+function filterFaq(){
+const q=(document.getElementById("faqSearch").value||"").toLowerCase();
+let filtered=FAQS;
+if(activeFaqCat!=="全部")filtered=filtered.filter(f=>f.cat===activeFaqCat);
+if(q.length>1)filtered=filtered.filter(f=>f.q.toLowerCase().includes(q)||f.a.toLowerCase().includes(q));
+document.getElementById("faqCount").textContent=`顯示 ${filtered.length} / ${FAQS.length} 則`;
+const list=document.getElementById("faqList");
+list.innerHTML=filtered.map((f,i)=>`<div class="faq-item" id="faq${i}"><div class="faq-q" onclick="toggleFaq(${i})"><span class="faq-q-text">${f.q}</span><span class="faq-q-cat">${f.cat}</span><span class="faq-arrow">▼</span></div><div class="faq-a">${f.a}</div></div>`).join("");
+}
+function toggleFaq(i){document.getElementById("faq"+i).classList.toggle("open")}
+document.getElementById("search").addEventListener("input",function(e){
+const q=e.target.value.toLowerCase();const box=document.getElementById("searchResults");
+if(q.length<2){box.className="search-results";return}
+const results=allCompanies.filter(c=>c.ticker.toLowerCase().includes(q)||c.note.toLowerCase().includes(q));
+if(!results.length){box.className="search-results";return}
+box.className="search-results show";
+box.innerHTML=results.slice(0,10).map(c=>`<div class="sr-item" onclick="document.getElementById('search').value='';document.getElementById('searchResults').className='search-results';selectCompany('${c.ticker.replace(/'/g,"\\'")}')"><b>${c.flag} ${c.ticker}</b><span class="meta">${c.chain} › ${c.layer}</span></div>`).join("")});
+document.getElementById("insightsGrid").innerHTML=INSIGHTS.map(i=>`<div class="ins-card"><p class="t">${i.title}</p><p class="d">${i.desc}</p></div>`).join("");
+renderMap();
+</script>
+</body>
+</html>

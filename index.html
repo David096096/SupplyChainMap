@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 基礎設施供應鏈地圖 v3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans TC','SF Pro Display',-apple-system,sans-serif;background:#0a0a0f;color:#e4e4e7;min-height:100vh;padding:20px}
+.wrap{max-width:920px;margin:0 auto}
+h1{font-size:22px;font-weight:700;color:#fafafa;letter-spacing:-.5px}
+.sub{font-size:13px;color:#71717a;margin-top:4px}
+.mt{display:flex;gap:0;margin:20px 0 16px;border-bottom:1px solid #27272a}
+.mtb{padding:10px 20px;border:none;cursor:pointer;font-size:14px;font-weight:600;background:none;color:#71717a;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s}
+.mtb.a{color:#fafafa;border-bottom-color:#3b82f6}
+.sb,.fs{width:100%;padding:10px 14px;background:#18181b;border:1px solid #27272a;border-radius:8px;color:#e4e4e7;font-size:14px;outline:none;font-family:inherit;margin:0 0 6px}
+.sb::placeholder,.fs::placeholder{color:#52525b}
+.sr{background:#18181b;border:1px solid #27272a;border-radius:8px;max-height:240px;overflow-y:auto;display:none}
+.sr.show{display:block}
+.sri{padding:10px 14px;cursor:pointer;border-bottom:1px solid #1f1f23;font-size:13px;transition:background .15s}
+.sri:hover{background:#27272a}
+.sri b{font-weight:600}.sri .m{color:#71717a;margin-left:8px}
+.tabs{display:flex;gap:5px;margin:14px 0 16px;flex-wrap:wrap}
+.tab{padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;background:#1f1f23;color:#a1a1aa;font-family:inherit;transition:all .2s}
+.tab.a{color:#fff}
+.cb{background:#111114;border:1px solid #1f1f23;border-radius:12px;overflow:hidden}
+.ch{padding:14px 18px;border-bottom:1px solid #1f1f23;display:flex;align-items:center;gap:10px}
+.ch .ic{font-size:22px}.ch h2{font-size:16px;font-weight:700;color:#fafafa}.ch .inf{font-size:12px;color:#71717a}
+.ly{border-bottom:1px solid #1f1f23}.ly:last-child{border-bottom:none}
+.ln{padding:8px 18px;background:#0d0d11;display:flex;align-items:center;gap:8px}
+.lb{width:3px;height:13px;border-radius:2px}.ln span{font-size:12px;font-weight:600;color:#a1a1aa}
+.cos{padding:6px 14px 10px;display:flex;flex-wrap:wrap;gap:5px}
+.co{padding:5px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;border:1px solid #27272a;background:#18181b;color:#d4d4d8;font-family:inherit;transition:all .15s}
+.co:hover{border-color:#52525b}.co.sel{background:var(--cc-dim);border-color:var(--cc);color:#fafafa}
+.co.hl{border-color:#eab308;background:#eab30811;color:#eab308}
+.det{margin-top:12px;padding:14px 18px;background:#111114;border:1px solid var(--cc-dim);border-radius:10px;border-left:3px solid var(--cc);display:none}
+.det.show{display:block}.det h3{font-size:15px;font-weight:700;color:#fafafa}
+.det .pa{font-size:11px;color:#71717a;margin-top:3px}
+.det .cl{background:none;border:none;color:#71717a;cursor:pointer;font-size:16px;padding:0;font-family:inherit}
+.det p{font-size:13px;line-height:1.7;color:#d4d4d8;margin-top:10px}
+.dt{display:flex;justify-content:space-between;align-items:flex-start}
+.ins{margin-top:24px}.ins h3{font-size:14px;font-weight:700;color:#fafafa;margin-bottom:10px}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(max-width:600px){.ig{grid-template-columns:1fr}.fa{font-size:12px!important}}
+.ic2{padding:10px 12px;background:#111114;border:1px solid #1f1f23;border-radius:8px}
+.ic2 .t{font-size:12px;font-weight:600;color:#fafafa}.ic2 .d{font-size:11px;color:#71717a;margin-top:3px;line-height:1.4}
+.ft{font-size:10px;color:#3f3f46;text-align:center;margin-top:20px;padding-bottom:16px}
+.ms,.fqs{display:none}.ms.show,.fqs.show{display:block}
+.fs{margin:0 0 12px}
+.fc{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.fcat{padding:5px 10px;border-radius:6px;border:1px solid #27272a;cursor:pointer;font-size:11px;font-weight:600;background:#18181b;color:#a1a1aa;font-family:inherit;transition:all .2s}
+.fcat.a{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.fqi{background:#111114;border:1px solid #1f1f23;border-radius:10px;margin-bottom:6px;overflow:hidden}
+.fq{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:background .15s}
+.fq:hover{background:#18181b}
+.fqt{font-size:13px;font-weight:600;color:#e4e4e7;flex:1}
+.fqc{font-size:10px;padding:2px 7px;border-radius:4px;background:#27272a;color:#71717a;white-space:nowrap}
+.far{color:#52525b;font-size:12px;transition:transform .2s}
+.fqi.open .far{transform:rotate(180deg)}
+.fa{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;font-size:13px;line-height:1.7;color:#a1a1aa}
+.fqi.open .fa{padding:0 16px 14px;max-height:4000px}
+.fa strong{color:#d4d4d8;font-weight:600}
+.fa .point{margin:5px 0;padding-left:10px;border-left:2px solid #27272a}
+.fcnt{font-size:11px;color:#52525b;margin-bottom:12px}
+.stat{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
+.sti{padding:10px 14px;background:#111114;border:1px solid #1f1f23;border-radius:8px;text-align:center;flex:1;min-width:80px}
+.stn{font-size:20px;font-weight:700;color:#fafafa}.stl{font-size:10px;color:#71717a;margin-top:2px}
+
+.ov{margin:0 0 8px;background:#111114;border:1px solid #1f1f23;border-radius:12px;overflow:hidden}
+.ov-h{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+.ov-h:hover{background:#18181b}
+.ov-h h3{font-size:15px;font-weight:700;color:#fafafa}
+.ov-ar{color:#52525b;font-size:14px;transition:transform .2s}
+.ov.open .ov-ar{transform:rotate(180deg)}
+.ov-body{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease;padding:0 18px}
+.ov.open .ov-body{max-height:2000px;padding:0 18px 18px}
+.tree{font-size:13px;line-height:2}
+.t0{color:#fafafa;font-weight:600}
+.t1{margin-left:20px;color:#e4e4e7}
+.t2{margin-left:44px;color:#a1a1aa}
+.t3{margin-left:68px;color:#71717a}
+.tl{display:inline-block;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:500}
+.tl-r{background:#dc262622;color:#f87171;border:1px solid #dc262644}
+.tl-y{background:#eab30822;color:#fbbf24;border:1px solid #eab30844}
+.tl-g{background:#05966922;color:#34d399;border:1px solid #05966944}
+.tl-b{background:#2563eb22;color:#60a5fa;border:1px solid #2563eb44}
+.ov-note{font-size:11px;color:#52525b;margin-top:12px;padding-top:10px;border-top:1px solid #1f1f23;line-height:1.5}
+
+.wsb-bar{margin:0 0 8px;background:#111114;border:1px solid #1f1f23;border-radius:12px;overflow:hidden}
+.wsb-h{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.wsb-h:hover{background:#18181b}
+.wsb-h h3{font-size:14px;font-weight:700;color:#fafafa}
+.wsb-ar{color:#52525b;font-size:14px;transition:transform .2s}
+.wsb-bar.open .wsb-ar{transform:rotate(180deg)}
+.wsb-body{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 18px}
+.wsb-bar.open .wsb-body{max-height:600px;padding:0 18px 16px}
+.wsb-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:600px){.wsb-grid{grid-template-columns:1fr}}
+.wsb-card{padding:10px 12px;background:#18181b;border:1px solid #27272a;border-radius:8px}
+.wsb-card h4{font-size:12px;font-weight:600;margin-bottom:6px}
+.wsb-card.alpha h4{color:#34d399}
+.wsb-card.priced h4{color:#fbbf24}
+.wsb-item{font-size:11px;color:#a1a1aa;line-height:1.8}
+.wsb-item .tk{color:#d4d4d8;font-weight:600}
+.wsb-item .heat{margin-left:4px}
+.wsb-loading{font-size:11px;color:#52525b;padding:8px 0}
+.wsb-badge{font-size:9px;margin-left:3px;vertical-align:middle}
+.wsb-ts{font-size:10px;color:#3f3f46;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div><h1>AI 基礎設施供應鏈地圖</h1><p class="sub">資料來源：推特書籤週報 04/09 – 07/19 ｜ David's Research Project</p></div>
+<div class="stat" id="st"></div>
+<div class="ov open" id="ovSec">
+<div class="ov-h" onclick="document.getElementById('ovSec').classList.toggle('open')">
+<h3>🧅 逐層剝洋蔥 — AI 供應鏈瓶頸擴散結構</h3>
+<span class="ov-ar">▼</span>
+</div>
+<div class="ov-body">
+<div class="tree">
+<div class="t0">GPU 需求爆發 <span class="tl tl-g">已發生</span></div>
+<div class="t1">→ 記憶體不夠（DRAM / HBM / NAND）<span class="tl tl-r">缺到 2028+</span></div>
+<div class="t2">→ 從週期性轉向成長週期性（需求 CAGR ~50% vs 供給 ~20%）<span class="tl tl-g">Fin+郭明錤+Jukan 認證</span></div>
+<div class="t2">→ Samsung 緊急建三座新廠（器興+龍仁提前2年+P5 超10兆韓元）<span class="tl tl-r">供給追不上</span></div>
+<div class="t2">→ 做記憶體的基板不夠（ABF 擴產中）<span class="tl tl-y">擴產中</span></div>
+<div class="t3">→ 做基板的材料不夠（T-Glass 缺 40%、HVLP4 銅箔、E-glass 漲 60-90%）<span class="tl tl-r">嚴重短缺</span></div>
+<div class="t1">→ 供電系統撐不住（800V DC）<span class="tl tl-g">Q3 2026 小量出貨</span></div>
+<div class="t2">→ 做供電的功率元件不夠（SiC / GaN）<span class="tl tl-y">CAGR 63-69%</span></div>
+<div class="t2">→ 被動元件跟不上（MLCC / 矽電容）<span class="tl tl-r">B/B ratio 創新高</span></div>
+<div class="t3">→ Rubin NVL72 每機架 60 萬顆，使用量 13 倍，價值 $40K+<span class="tl tl-r">MLCC 漲 10 倍</span></div>
+<div class="t3">→ 高階良率低 3-6 倍，設備交期 1-1.5 年，矽電容僅三家<span class="tl tl-r">極度集中</span></div>
+<div class="t1">→ 資料傳輸撐不住（800G → 1.6T → CPO）<span class="tl tl-y">空頭計劃明年買回</span></div>
+<div class="t2">→ 做光學的材料（InP 中國放鬆但仍緊）<span class="tl tl-y">部分緩解</span></div>
+<div class="t2">→ 做光學的設備不夠（測試瓶頸）+ 大立光 FAU 訂單確認<span class="tl tl-g">訂單確認</span></div>
+<div class="t1">→ 封裝撞到物理極限（翹曲、M9/M10/PTFE → M9+Q-glass 確定）<span class="tl tl-b">驗證中</span></div>
+<div class="t2">→ 玻璃基板驗證中（鈦昇 TGV 30-40倍速、領先台廠3-5年）<span class="tl tl-g">量產提前</span></div>
+<div class="t2">→ EMIB-T 第二封裝路線（Google Humufish + SpaceX/xAI + Anthropic 考慮 Samsung）<span class="tl tl-g">多源確認</span></div>
+<div class="t1" style="margin-top:6px;padding-top:6px;border-top:1px dashed #27272a">→ 半導體設備全線滿產<span class="tl tl-r">ASML 漲價、TEL 雙班制目標漲50%</span></div>
+<div class="t2">→ Samsung P5 設備訂單超 10 兆韓元，要求縮短交期<span class="tl tl-r">設備搶奪</span></div>
+<div class="t2">→ 鉬取代鎢、TSMC PIC 產能 30 倍擴充<span class="tl tl-y">技術轉換</span></div>
+<div class="t2">→ 氣渦輪機瓶頸：40% 供應缺口，交期 5 年<span class="tl tl-r">新瓶頸</span></div>
+<div class="t1" style="margin-top:6px;padding-top:6px;border-top:1px dashed #27272a">→ 記憶體短缺外溢到消費電子（逐層剝洋蔥的最新延伸）<span class="tl tl-r">NEW</span></div>
+<div class="t2">→ iPhone DRAM 被迫升至 12GB，Apple 拉貨少 15-20%（郭明錤）<span class="tl tl-r">擠壓消費端</span></div>
+<div class="t2">→ Jevons paradox：hyperscaler 省下的記憶體重新投入計算（Jukan）<span class="tl tl-r">短缺自我強化</span></div>
+<div class="t2">→ 手機記憶體成本佔 BOM 60%，造成嚴重銷量萎縮<span class="tl tl-y">需求擠壓</span></div>
+</div>
+<div class="ov-note">
+每一層瓶頸被解決或被繞過後，下一層就會浮現。AI capex 的規模已大到同時壓力測試整條供應鏈的每一層。<br>
+🔴 嚴重短缺　🟡 擴產/過渡中　🟢 方向確認/已啟動　🔵 驗證階段<br>
+框架來源：五期週報累積觀察（04/09 – 07/19）｜ qinbafrank 四問濾鏡 ｜ 艦長 × Serenity × Katoo 方法論趨同
+</div>
+</div>
+</div>
+<div class="wsb-bar" id="wsbBar">
+<div class="wsb-h" onclick="document.getElementById('wsbBar').classList.toggle('open')">
+<h3>🔍 散戶情緒 vs 分析師觀點（WSB 即時數據）</h3>
+<span class="wsb-ar">▼</span>
+</div>
+<div class="wsb-body">
+<div id="wsbContent"><p class="wsb-loading">載入 WallStreetBets 數據中...</p></div>
+<div class="wsb-ts" id="wsbTs"></div>
+</div>
+</div>
+<div class="mt"><button class="mtb a" onclick="sw('map')">🗺️ 供應鏈地圖</button><button class="mtb" onclick="sw('faq')">❓ FAQ 學習筆記</button></div>
+<div class="ms show" id="mS">
+<input class="sb" type="text" placeholder="搜尋公司名稱或關鍵字..." id="se">
+<div class="sr" id="sR"></div>
+<div class="tabs" id="tb"></div>
+<div id="cC"></div>
+<div class="det" id="de"><div class="dt"><div><h3 id="dT"></h3><p class="pa" id="dP"></p></div><button class="cl" onclick="cD()">✕</button></div><p id="dN"></p></div>
+<div class="ins"><h3>💡 跨鏈 Insight</h3><div class="ig" id="iG"></div></div>
+</div>
+<div class="fqs" id="fS">
+<input class="fs" type="text" placeholder="搜尋問題或關鍵字..." id="fSe" oninput="fF()">
+<div class="fc" id="fC"></div>
+<div class="fcnt" id="fCn"></div>
+<div id="fL"></div>
+</div>
+<p class="ft">最後更新：2026/07/19 ｜ 分析師：Jukan, Serenity, 駿HaYao, ManChurius Hao, Art of Speculation, Paradis Labs, Mark, qinbafrank, BlueJay, Katoo, F22, Yiran, GaeTano, Zephyr, 艦長</p>
+</div>
+<script>
+const C={"memory": {"label": "記憶體", "icon": "💾", "color": "#2563eb", "layers": [{"name": "DRAM / HBM", "companies": [{"ticker": "SK Hynix", "note": "HBM 市佔 57-62%，利潤率 72%。375 層 3D NAND 年底量產（鎢→鉬轉換）。清州 M15X 火災。HBM 翻轉 DRAM 數十年成本下降趨勢。", "flag": "🇰🇷"}, {"ticker": "Samsung DS", "note": "產線轉 HBM/DDR5。HBM4E 良率突破 70%，1c DRAM 製程領先。Q3 DRAM 漲價最高 20%。Samsung Foundry 拿到 TPU V10ax + Anthropic 考慮其封裝。1.4nm 製程開發啟動。", "flag": "🇰🇷"}, {"ticker": "Micron", "note": "營收 $414.6B（90% 來自 ASP）。毛利率 86%。已簽 16 份 SCA。HBM4 出貨超 $10 億。提供 $5 億資助 GlobalWafers 美國產能。⚠️ 價格上漲速度開始放慢（qinbafrank）。NVIDIA NDR：記憶體短缺持續數年。", "flag": "🇺🇸"}, {"ticker": "南亞科 2408", "note": "DDR4 結構性缺貨。打入 Vera Rubin HBM。毛利率 79.5%。Capex 翻 4 倍。", "flag": "🇹🇼"}]}, {"name": "NAND / SSD", "companies": [{"ticker": "SNDK Sandisk", "note": "從 WDC 分拆。3D NAND 晶圓+品牌一體。Vera Rubin 單台 1,152TB SSD，明年 10 萬台吃全球 NAND 9.3%。Art of Speculation / Paradis Labs 均列第一梯隊。", "flag": "🇺🇸"}, {"ticker": "Kioxia", "note": "全球第二大 NAND。確認短缺持續到 Q4 2027。", "flag": "🇯🇵"}, {"ticker": "旺宏", "note": "2D NAND 獨佔者。營收年增 153.7%。MLC eMMC 無有效競爭至少 3 年。", "flag": "🇹🇼"}, {"ticker": "華邦電", "note": "SLC NAND 位元成長 80%+。專注 SLC+NOR。", "flag": "🇹🇼"}]}, {"name": "CXL / 記憶體介面", "companies": [{"ticker": "Astera Labs", "note": "CXL 重定時器市佔 55%，毛利率 76.4%。", "flag": "🇺🇸"}, {"ticker": "Montage 瀾起", "note": "CPU 採用率提升 + CXL 佈局。", "flag": "🇨🇳"}]}, {"name": "記憶體材料", "companies": [{"ticker": "後成 093370.KR", "note": "WF6 特殊氣體。中國鎢出口管制影響 25-35% 供應鏈。市值 $12 億。台灣可透過元大/兆豐複委託購買韓股。", "flag": "🇰🇷"}, {"ticker": "Air Liquide / Entegris / Merck", "note": "鉬材料供應商。SK Hynix 375 層採用鉬。用量：三星今年 10 噸→2030 年 80 噸。", "flag": "🌐"}]}]}, "abf": {"label": "ABF / 封裝 / 材料", "icon": "📦", "color": "#7c3aed", "layers": [{"name": "ABF 膜材 / 玻纖 / 銅箔", "companies": [{"ticker": "Ajinomoto 味之素", "note": "ABF 膜材 95%+ 壟斷。Q3 漲 30%。層數 3+3→11+11→13+13。第三廠 2028→2032。", "flag": "🇯🇵"}, {"ticker": "Nittobo", "note": "T-Glass 玻纖壟斷 90%。2026 供需缺口超 40%。", "flag": "🇯🇵"}, {"ticker": "德宏工業 5075", "note": "E-glass 已漲 60-90%，創歷史新高。", "flag": "🇹🇼"}, {"ticker": "樂天能源材料", "note": "AI 電路箔訂單超以往 10 倍。價格是 EV 銅箔 3-4 倍。全球僅三家能量產。", "flag": "🇰🇷"}, {"ticker": "Mitsui Kinzoku / Co-Tech", "note": "HVLP4 銅箔。2026 缺 1,500 噸，2027 擴大到 2,500 噸。NVIDIA 直接介入鎖產能。", "flag": "🇯🇵"}]}, {"name": "ABF 基板製造", "companies": [{"ticker": "欣興 3037", "note": "規模最大。NVIDIA+Intel 雙吃。ABF 擴產 40%。CPU 成長卡 ABF 載板。", "flag": "🇹🇼"}, {"ticker": "景碩 3189", "note": "幫 NVIDIA 開發多種載板。ASE 集團。", "flag": "🇹🇼"}, {"ticker": "臻鼎 4958", "note": "全球最大 PCB。Google TPU 載板認證（TPU v9 聯發科獨拿讓認證更有意義）。", "flag": "🇹🇼"}, {"ticker": "Ibiden", "note": "EMIB-T 基板第一。投資 2,200 億日圓。與台積電+Innolux 聯合驗證 CoPoS。", "flag": "🇯🇵"}]}, {"name": "玻璃基板（新興）", "companies": [{"ticker": "SKC Absolics 011790.KR", "note": "先行者。H2 2026 量產，搭 AMAT 設備，客戶 AMD。", "flag": "🇰🇷"}, {"ticker": "Innolux 群創", "note": "與台積電+Ibiden 首次聯合 CoPoS 玻璃基板驗證。COP 改善 16%、CTE 降 19%。", "flag": "🇹🇼"}, {"ticker": "Corning / SCHOTT", "note": "玻璃核心材料。Corning 與 NVIDIA 合作。", "flag": "🇺🇸"}, {"ticker": "LPKF", "note": "TGV 雷射設備。Mark 認為資金最先流向設備。", "flag": "🇩🇪"}, {"ticker": "鈦昇科技 8027", "note": "TGV 雷射改質設備，速度傳統 30-40 倍，全球唯一具量產性。領先台廠 3-5 年。已通過 Murata 電漿切割驗證。同時覆蓋 FOPLP+CPO+EMIB-T。4Q 滿載，在手單到明年 1Q。量產時程比市場預期提前（原 2028，實際可能 2027）。", "flag": "🇩🇪"}]}, {"name": "封裝架構", "companies": [{"ticker": "TSMC CoWoS/COUPE", "note": "主流封裝。COUPE 3.2T OE 0.5Tbps/mm。目標 4Q28-1Q29 玻璃核心量產。", "flag": "🇹🇼"}, {"ticker": "Intel EMIB-T", "note": "Google Humufish 確認用 EMIB-T（SemiAnalysis 報導）。不受 reticle limit、成本更低、矽利用率更高。Hyperscaler 系統性建立台積電以外第二來源。Anthropic 也考慮 Samsung 封裝。風險：EMIB-T 量產良率待驗證。", "flag": "🇺🇸"}]}]}, "optical": {"label": "CPO / 矽光子", "icon": "📡", "color": "#dc2626", "layers": [{"name": "材料", "companies": [{"ticker": "AXTI", "note": "InP 基板壟斷。$14→$140。中國 2026/05 放行 4,000 片。Google 親訪海外供應商，長期目標非中國超 50%。Paradis Labs 降為 Hold。", "flag": "🇺🇸"}, {"ticker": "IQE", "note": "外延晶圓。在 InP 上長磊晶層。", "flag": "🇬🇧"}, {"ticker": "NGK 5333", "note": "TFLN 晶圓壟斷者。8 吋突破。1V 調變、100GHz。跟 AXTI 互補。", "flag": "🇯🇵"}]}, {"name": "雷射光源", "companies": [{"ticker": "SIVE", "note": "整個 NVIDIA NVLink CPO 生態系雷射來源。GFS default component（架構級綁定）。TAM $55-77 億。⚠️ SemiAnalysis 認為 Scale-out 時程過激進。", "flag": "🇸🇪"}, {"ticker": "Win Semi 穩懋", "note": "雷射晶圓代工瓶頸。", "flag": "🇹🇼"}, {"ticker": "Lumentum", "note": "CPO scale-up 2027H2 出貨、2028 ramp。管理層反駁 SemiAnalysis。", "flag": "🇺🇸"}]}, {"name": "矽光子 / 光引擎", "companies": [{"ticker": "SOI Soitec", "note": "SOI 基板主導。$45→$170。", "flag": "🇫🇷"}, {"ticker": "GlobalFoundries", "note": "矽光子代工 SCALE™。SIVE 為 default component。", "flag": "🇺🇸"}, {"ticker": "Ayar Labs", "note": "NVIDIA 投資。NVL576 每 GPU 6 個 3.2T 光引擎（需求×6）。", "flag": "🇺🇸"}, {"ticker": "HyperLight", "note": "TFLN Chiplet。與 UMC+Jabil 量產。", "flag": "🇺🇸"}, {"ticker": "FOCI 上詮 3363", "note": "FAU 與台積電合作 3 年。1.6T/3.2T。COUPE 從單排→雙排 FAU。⚠️ 采鈺整合風險。", "flag": "🇹🇼"}, {"ticker": "大立光 3008", "note": "FAU 新進者。四排 FAU 公差 0.3μm。自製設備築護城河。確認拿到首張 CPO FAU 訂單，明年年中量產（Serenity 確認）。艦長點名 FAU 是「產值較大的環節」。", "flag": "🇹🇼"}, {"ticker": "Lightmatter", "note": "光子互連 Passage。", "flag": "🇺🇸"}]}, {"name": "檢測 / 設備", "companies": [{"ticker": "MSScorp 6830", "note": "CPO 良率檢測壟斷。艦長：「供應鏈最大問題是測試」。", "flag": "🇹🇼"}, {"ticker": "AEHR", "note": "光子 burn-in。hyperscaler $4,100 萬訂單。", "flag": "🇺🇸"}]}, {"name": "DSP / 光模組", "companies": [{"ticker": "Marvell MRVL", "note": "DSP + Celestial AI + Custom ASIC。NVIDIA 投 $20 億。Jensen 說到 $1T。⚠️ 首次出現系統性看空：Teralynx T100 monolithic 良率風險、OIO 失敗、沒跟上 UALink+UEC+ROCm 開放標準。但 NVIDIA 真金白銀 $20 億比看空推文更有說服力。", "flag": "🇺🇸"}, {"ticker": "Broadcom", "note": "DSP + 最早出貨 CPO。Google TPU 合作。", "flag": "🇺🇸"}, {"ticker": "AAOI", "note": "Serenity 最愛。1.6T 訂單。Q3 產能 650k+/月。⚠️ ATM 稀釋。Serenity 為其辯護：1.6T 跟 CPO 時程無關。", "flag": "🇺🇸"}]}, {"name": "CPO 封裝", "companies": [{"ticker": "訊芯-KY 6451", "note": "鴻海集團。Edge coupling。51.2T 出貨。背靠鴻海難被顛覆。", "flag": "🇹🇼"}, {"ticker": "ASE 日月光", "note": "全球最大 OSAT。「光互連是明確軌跡」。", "flag": "🇹🇼"}]}, {"name": "光傳輸（DC 間）", "companies": [{"ticker": "Nokia NOK", "note": "Optical +20%。Infinera。NVIDIA 投 $10 億。Jensen 直接點名。2028 EBIT 較指引高 58%。AI-RAN。股價漲 73%。", "flag": "🇫🇮"}]}]}, "mlcc": {"label": "MLCC / 被動元件", "icon": "🔋", "color": "#ea580c", "layers": [{"name": "MLCC 龍頭", "companies": [{"ticker": "Murata 6981", "note": "月產 1,600 億顆。7/1 再漲 10-40%（AI+車載）。Rubin NVL72 每機架 60 萬顆 MLCC，價值 $40,000+（H100 僅 $3-5K）。AI 伺服器 MLCC 是一般伺服器 13 倍。良率低 3-6 倍。CAGR 55-64%（量）85-100%+（價值）。📌觀察名單", "flag": "🇯🇵", "hl": true}, {"ticker": "SEMCO", "note": "唯一矽電容+基板 turnkey。EMIB 訂單 $10 億+。", "flag": "🇰🇷"}, {"ticker": "Taiyo Yuden", "note": "高端 MLCC。漲 6-13%。", "flag": "🇯🇵"}, {"ticker": "TDK", "note": "MLCC 第四大。FY28E P/E 21.0x。", "flag": "🇯🇵"}]}, {"name": "Tier 2 / 台灣", "companies": [{"ticker": "國巨 2327", "note": "BB ratio 超 1.3x。P/E 24.4x ROE 27.5% 同業首位。中端受益 Macronix effect。", "flag": "🇹🇼"}, {"ticker": "華新科 2492", "note": "缺貨持續 2027+。capex 翻三倍。設備交期 6-12 月。2H26 通路商收緊現貨。", "flag": "🇹🇼"}, {"ticker": "禾伸堂 3026", "note": "產能今年 +20-30%，明年 +30-40%。但明年缺貨更嚴重。", "flag": "🇹🇼"}]}, {"name": "中國 MLCC / 雙軌結構", "companies": [{"ticker": "三環集團", "note": "台灣供應鏈開始認證中國替代。", "flag": "🇨🇳"}, {"ticker": "MLCC+矽電容 雙軌", "note": "未來 AI 伺服器：板端 MLCC + 封裝內矽電容。互補非替代。低階 ASP 至 2028 漲近 45%。", "flag": "🌐"}]}]}, "gpu": {"label": "GPU / ASIC / CPU", "icon": "🖥️", "color": "#059669", "layers": [{"name": "GPU", "companies": [{"ticker": "NVIDIA", "note": "全棧。Jensen：整個供應鏈都短缺。SN6600 CPO 115Tb/s。SoCAMM2 降規增量（96GB×6 倍）。NVL576 每 GPU 6 個光引擎（需求×6）。直接介入上游材料鎖產能。希望中國模型建在輝達晶片上不只因 CUDA，更因推理才跟錢掛鉤。", "flag": "🇺🇸"}, {"ticker": "AMD", "note": "Helios 2H26 量產。Microsoft 第二平台。Anthropic MI450。", "flag": "🇺🇸"}]}, {"name": "Custom ASIC", "companies": [{"ticker": "Marvell MRVL", "note": "18 專案。NVLink Fusion。FY2027 Q1 $24.18 億。", "flag": "🇺🇸"}, {"ticker": "Broadcom", "note": "Google TPU 合作。押 448G 沒 ready，TPU v9 出局。", "flag": "🇺🇸"}, {"ticker": "聯發科 2454", "note": "TPU v9 獨拿（336G SerDes）+ SpaceX/xAI ASIC。自做 EIC，開始談自包整機架。升級至系統級設計。ASIC 營收 $22→180→480 億。", "flag": "🇹🇼"}]}, {"name": "CPU", "companies": [{"ticker": "NVIDIA Vera", "note": "$200 億市場。SoCAMM2 需求接近手機全年 LPDDR5。CPU 全面缺貨：Intel 卡 15-20%、AMD 卡 30%+。", "flag": "🇺🇸"}, {"ticker": "Qualcomm", "note": "Investor Day 宣布 FY2029 拿 $150 億 DC 市場。試圖用 LPDDR 取代 HBM（5-6 倍差價）、Chiplet 簡化 CoWoS。陸行之：若成功可能改變記憶體和矽中介層需求。但 Fin：KV cache 主賽道至少五年無替代。", "flag": "🇺🇸"}, {"ticker": "Intel", "note": "14A + EMIB-T。爭取代工。", "flag": "🇺🇸"}]}]}, "power": {"label": "800V DC 電力", "icon": "⚡", "color": "#b45309", "layers": [{"name": "功率半導體（SiC/GaN）", "companies": [{"ticker": "onsemi $ON", "note": "SiC/GaN 龍頭。機架含量 $15K→$115K（7.7 倍）。SiC CAGR 63%、GaN 69%。", "flag": "🇺🇸"}, {"ticker": "Infineon / TI / ADI", "note": "1MW 機架模擬半導體含量 $92 萬。", "flag": "🌐"}]}, {"name": "電源系統", "companies": [{"ticker": "台達電 2308", "note": "瑞銀認為最大受益者。已出貨 SST。EV 800V 技術直接轉移 AI。", "flag": "🇹🇼"}, {"ticker": "Vertiv $VRT", "note": "4.8MW 列級方案領先。SemiAnalysis 也看好。", "flag": "🇺🇸"}, {"ticker": "松川精密 7788", "note": "800V DC 受益者。NVIDIA+Google 帶頭，Q3 2026 小量出貨（提前，打臉 SemiAnalysis 延後說）。", "flag": "🇹🇼"}]}, {"name": "電力需求規模", "companies": [{"ticker": "AI 資料中心", "note": "傳統 10-15kW → Feynman 1.5MW（近百倍）。2025-2030 累計 233GW。800V 減銅 45%、轉換 5→2 階段。⚠️ SemiAnalysis 說延後至 2028，但工商時報報導 Q3 2026 已開始小量出貨。", "flag": "🌐"}]}]}, "equipment": {"label": "半導體設備", "icon": "🔧", "color": "#6d28d9", "layers": [{"name": "前段設備", "companies": [{"ticker": "TEL 8035.JP", "note": "全球第三大。全線滿產雙班制推漲價。SK Hynix 375 層選 TEL 爐管鉬沉積。WFE 2026 成長超 20%（$1,500 億+），DRAM +30%、NAND +40%。AI capex 從 GPU→記憶體→正式擴散到設備層。記憶體擴產是設備需求最大來源。設備 ETF 重倉序：蝕刻>沉積>清洗>測試>HBM封裝。", "flag": "🇯🇵"}, {"ticker": "Lam Research", "note": "蝕刻龍頭。Samsung 選 Lam 做鉬沉積。", "flag": "🇺🇸"}, {"ticker": "AMAT", "note": "最大設備商。SKC Absolics 用 AMAT 設備。", "flag": "🇺🇸"}]}, {"name": "後段 / 測試設備", "companies": [{"ticker": "DISCO", "note": "切割研磨。開始吃緊。", "flag": "🇯🇵"}, {"ticker": "EVG", "note": "接合設備。開始吃緊。", "flag": "🇦🇹"}, {"ticker": "Advantest", "note": "GPU 測試步驟指數成長。艦長點名測試設備是瓶頸。", "flag": "🇯🇵"}, {"ticker": "AEHR", "note": "光子 burn-in。hyperscaler 訂單。3 個月漲 3 倍。", "flag": "🇺🇸"}]}]}, "infra": {"label": "基礎設施", "icon": "☁️", "color": "#0891b2", "layers": [{"name": "伺服器組裝", "companies": [{"ticker": "鴻海 2317", "note": "NVL72/NVL576 製造。Computex 展示實機。VR200 取消線纜改 PDU 直插。", "flag": "🇹🇼"}, {"ticker": "廣達 2382", "note": "AI 伺服器。庫存偏高但賭下半年。", "flag": "🇹🇼"}, {"ticker": "緯創/緯穎/英業達", "note": "AMD Helios 2H26 量產。", "flag": "🇹🇼"}]}, {"name": "Neocloud", "companies": [{"ticker": "NBIS Nebius", "note": "Serenity 偏好。NVIDIA 投入資金。", "flag": "🇳🇱"}, {"ticker": "IREN", "note": "⚠️ qinbafrank：高負債、資產貶值、下行期破產。短期 trading 可以，長期算了。", "flag": "🇺🇸"}]}]}};
+const F=[{"cat": "NVIDIA", "q": "NVIDIA 這次財報跟以往不同的點？為什麼點名的廠商都會暴漲？", "a": "<strong>三個差異：</strong><div class=\"point\">1. 業務敘事重寫：Data Center + Edge Computing（Physical AI）</div><div class=\"point\">2. Vera CPU 獨立 $200 億市場，超越 x86</div><div class=\"point\">3. N3 產能從 Rubin 挪去 Vera CPU</div><strong>為什麼暴漲：</strong>法說點名 = TAM 認證書。Supply Chain Inheritance：供應商寧願漲價不擴產，需求確認後價格和利潤率同時上走。"}, {"cat": "瓶頸", "q": "記憶體、ABF、MLCC、CPO 為什麼是供應鏈瓶頸？", "a": "<strong>記憶體：</strong>HBM 吃掉產能，兩邊同時缺。<strong>ABF：</strong>層數倍增，膜材 95% 壟斷。<strong>MLCC：</strong>AI 伺服器用量數倍，良率低 3-6 倍。<strong>CPO：</strong>銅線 800G 以上撞極限。<div class=\"point\">共同邏輯：需求指數級，擴產線性，單點壟斷多。</div>"}, {"cat": "記憶體", "q": "HBM 需求能被降低嗎？", "a": "<strong>PIM/CIM：</strong>最根本，3-5 年。<strong>CXL：</strong>提高利用率但不減總量。<strong>推理 ASIC：</strong>用 SRAM 取代，只適合推理。<strong>軟體：</strong>量化和 MoE 減緩但模型也在變大。<div class=\"point\">短期無法降低。中期 PIM/CIM 有機會。</div>"}, {"cat": "ABF", "q": "欣興、景碩、臻鼎的個別優勢？", "a": "<strong>欣興：</strong>規模最大，雙吃 CoWoS+EMIB-T。<strong>景碩：</strong>NVIDIA 合作最深。<strong>臻鼎：</strong>客戶最分散（Google+中國）。<div class=\"point\">ABF 瓶頸感更強：供應集中、擴產更久、乘數效應更大。</div>"}, {"cat": "CPO", "q": "CPO 為什麼重要？六層供應鏈？", "a": "銅線 800G 以上撞極限。<strong>六層：</strong><div class=\"point\">材料：AXTI（InP）、NGK（TFLN）</div><div class=\"point\">雷射：SIVE（chokepoint）、穩懋（代工）</div><div class=\"point\">光引擎：SOI、GFS、Ayar、FOCI、大立光（FAU）</div><div class=\"point\">檢測：MSScorp（良率）、AEHR（burn-in）</div><div class=\"point\">DSP：Marvell、Broadcom、AAOI</div><div class=\"point\">封裝：訊芯-KY、ASE</div>"}, {"cat": "MLCC", "q": "國巨能吃到高端 MLCC 嗎？", "a": "<strong>矽電容：吃不到。</strong><strong>高端 AI MLCC：很難直接切入。</strong>良率低 3-6 倍，僅少數供應商能經濟量產。<strong>間接受益：</strong>Tier 1 往高端走後中端空出（Macronix effect）。P/E 24.4x ROE 27.5% 同業首位。"}, {"cat": "MLCC", "q": "村田製作所的業務和優勢？", "a": "MLCC 龍頭。轉型 AI 供電整合商。<div class=\"point\">1. 高端 MLCC：800 層、漲 15-35%、2030 年 3.3 倍</div><div class=\"point\">2. 矽電容：跟 Ibiden 綁定 Intel EMIB</div><div class=\"point\">3. 電源模組：FY2027 前兩年 500 億日圓</div>護城河：材料科學 + PDN 協同設計 + 全產品線。📌觀察名單"}, {"cat": "公司", "q": "Marvell 的業務？", "a": "AI 數據基礎設施平台型。DSP（收購 Celestial AI $32.5 億）+ Custom Silicon（18 專案）。NVIDIA 投 $20 億 + NVLink Fusion。護城河：不管 NVIDIA 贏還是 Custom ASIC 贏都有位置。"}, {"cat": "公司", "q": "Nokia 業務和優勢？", "a": "用光纖連 AI 資料中心。Optical +20%。Infinera 收購。NVIDIA 投 $10 億。Jensen 直接點名。2028 EBIT 較指引高 58%。AI-RAN 第二曲線。分析師大幅上修。"}, {"cat": "公司", "q": "NGK 5333 是什麼？", "a": "日本陶瓷公司。TFLN 晶圓壟斷者（8 吋突破）。1V 調變、100GHz。跟 AXTI 互補：一個發光、一個調變。HyperLight+UMC+Jabil 推向量產。52 週漲超 3 倍。"}, {"cat": "概念", "q": "SoCAMM2 是什麼？", "a": "把 LPDDR5X 直接焊在模組上插在 CPU 旁邊。Vera CPU 每顆 8 個插槽。降規增量：192GB→96GB，量增 6 倍。總需求反增 10-20%。Meritz：DRAM 週期才到「大腿」。<div class=\"point\">記憶體跟 CPU 距離越來越近：DIMM→SoCAMM→HBM 貼 CPU。</div>"}, {"cat": "概念", "q": "800G → 1.6T 代表什麼？", "a": "單埠傳輸速度翻倍。<div class=\"point\">光通訊需求翻倍。CPO 從可選變必要。TFLN 有結構性優勢。DSP 重要性指數級提升。</div>"}, {"cat": "概念", "q": "800V DC 電力架構改變什麼？", "a": "48V→800V。電流小 16 倍、銅減 45%、轉換 5→2 階段。onsemi 含量增 7.7 倍。<strong>⚠️ SemiAnalysis 說延後至 2028，但實際 Q3 2026 已小量出貨（NVIDIA+Google 帶頭），打臉延後說。</strong>受益：onsemi、台達電、Vertiv、松川精密。"}, {"cat": "爭議", "q": "SemiAnalysis vs 產業方：CPO 和 800V？", "a": "<strong>CPO：</strong>SemiAnalysis 說 Scale-out 2029（良率 19%）。NVIDIA SVP 說 H2 2026。Lumentum 說 Scale-up 2027H2。<div class=\"point\">判斷：不同層級 CPO。NPO 2026-27→Scale-up 2027-28→Scale-out 2028-29。三者遞進非互斥。</div><strong>800V：</strong>SemiAnalysis 說 2028。但工商時報報導 Q3 2026 已小量出貨。<div class=\"point\">對廣泛供應鏈影響小，對純概念股時程風險大。</div>"}, {"cat": "記憶體", "q": "NAND 需求 / SNDK / 2D vs 3D？", "a": "Vera Rubin 單台 1,152TB SSD。明年 10 萬台吃全球 9.3%。<strong>SNDK：</strong>分拆獨立，NAND+品牌一體。「NAND 版南亞科」。<div class=\"point\"><strong>2D（旺宏華邦）：</strong>小容量嵌入式，大廠退出獨佔。<strong>3D（SNDK/Micron）：</strong>大容量 SSD，AI 需求暴增。兩邊客戶不同，都受益供需失衡。</div>"}, {"cat": "設備", "q": "東京電子的業務？", "a": "全球第三大設備商。塗佈/蝕刻/成膜/清洗。全線滿產雙班制推漲價。SK Hynix 375 層選 TEL 爐管鉬沉積。<div class=\"point\">WFE 最大上修是記憶體不是 GPU。後段（DISCO/EVG）也吃緊。</div>"}, {"cat": "投資", "q": "機會點在哪？對應股票？", "a": "<strong>最高確定性：</strong>MU/SNDK/SK Hynix（記憶體）、TEL/DISCO（設備）、Murata📌（MLCC）<br><strong>高確信有爭議：</strong>SIVE/LITE/MRVL（CPO）、NOK、台達電/Vertiv/onsemi（800V）<br><strong>新瓶頸：</strong>後成（WF6）、Mitsui/Co-Tech（銅箔）<br><strong>Art of Speculation 只選5個：</strong>DRAM ETF、FOTO ETF、NVDA、MRVL、NOK"}, {"cat": "分析", "q": "世界的共識：為什麼不同方法論會撞在一起？", "a": "Serenity（材料端往上挖）、Katoo（盤面動量往下找）、艦長（系統架構往下拆）三種完全不同的方法，結論趨同：AI capex 持續多年、記憶體+光互連是核心、瓶頸在供應鏈不在需求。<div class=\"point\">當三個獨立方法論指向同一結論，方向正確概率非常高。qinbafrank 四問框架可分辨「真實瓶頸」vs「主題相關」。</div>"}];
+const I=[{"title": "瓶頸逐層剝洋蔥", "desc": "GPU→記憶體→基板→供電→光互連→設備→原材料和化學品"}, {"title": "Supply Chain Inheritance", "desc": "AI capex 繼承 EV 供應鏈，供應商寧可漲價不擴產"}, {"title": "Jensen 官方認證", "desc": "GTC Taipei：從晶圓到矽光子到線纜，一切都短缺"}, {"title": "EMIB-T 重塑格局", "desc": "Google TPU + SpaceX/xAI 採用，帶動矽電容和 Ibiden"}, {"title": "記憶體缺到 2028", "desc": "新產能 2027 底，長約鎖量悖論，DRAM 營收年增 303%"}, {"title": "CPO 時程分歧", "desc": "SemiAnalysis 說 Scale-out 2029，NVIDIA SVP 說 H2 2026。實際是不同層級 CPO 有不同時程"}, {"title": "瓶頸穿透到原材料", "desc": "鉬、WF6、HVLP4 銅箔、T-Glass，NVIDIA 直接介入上游"}, {"title": "分析師共識形成", "desc": "存儲→光互連→算力→電力，多個獨立來源指向同一優先序"}];
+let aC="optical",sT=null,cM="map",aFC="全部";
+const allC=[];let tCo=0,tLy=0;
+Object.entries(C).forEach(([k,c])=>{tLy+=c.layers.length;c.layers.forEach(l=>{tCo+=l.companies.length;l.companies.forEach(co=>allC.push({...co,ck:k,chain:c.label,layer:l.name,color:c.color}))})});
+const fCats=["全部",...[...new Set(F.map(f=>f.cat))]];
+document.getElementById("st").innerHTML=`<div class="sti"><div class="stn">${Object.keys(C).length}</div><div class="stl">供應鏈</div></div><div class="sti"><div class="stn">${tLy}</div><div class="stl">層級</div></div><div class="sti"><div class="stn">${tCo}</div><div class="stl">公司</div></div><div class="sti"><div class="stn">${F.length}</div><div class="stl">FAQ</div></div><div class="sti"><div class="stn">${I.length}</div><div class="stl">Insight</div></div>`;
+function sw(m){cM=m;document.querySelectorAll('.mtb').forEach((t,i)=>t.className='mtb'+(i===(m==='map'?0:1)?' a':''));document.getElementById('mS').className='ms'+(m==='map'?' show':'');document.getElementById('fS').className='fqs'+(m==='faq'?' show':'');if(m==='faq')rF()}
+function rM(){const tb=document.getElementById("tb");tb.innerHTML="";Object.entries(C).forEach(([k,c])=>{const b=document.createElement("button");b.className="tab"+(aC===k?" a":"");b.textContent=c.icon+" "+c.label;b.style.background=aC===k?c.color:"#1f1f23";b.onclick=()=>{aC=k;sT=null;rM()};tb.appendChild(b)});const ch=C[aC];document.documentElement.style.setProperty("--cc",ch.color);document.documentElement.style.setProperty("--cc-dim",ch.color+"22");const cc=document.getElementById("cC");let h=`<div class="cb"><div class="ch"><span class="ic">${ch.icon}</span><div><h2>${ch.label}</h2><p class="inf">${ch.layers.length} 層 ｜ ${ch.layers.reduce((a,l)=>a+l.companies.length,0)} 家公司</p></div></div>`;ch.layers.forEach(ly=>{h+=`<div class="ly"><div class="ln"><div class="lb" style="background:${ch.color}"></div><span>${ly.name}</span></div><div class="cos">`;ly.companies.forEach(co=>{const s=sT===co.ticker;const cls="co"+(s?" sel":"")+(co.hl?" hl":"");const bg=s?ch.color+"22":co.hl?"#eab30811":"#18181b";const bc=s?ch.color:co.hl?"#eab308":"#27272a";const cl=s?"#fafafa":co.hl?"#eab308":"#d4d4d8";h+=`<button class="${cls}" style="background:${bg};border-color:${bc};color:${cl}" onclick="sC('${co.ticker.replace(/'/g,"\\'")}')">${co.flag} ${co.ticker}</button>`});h+=`</div></div>`});h+=`</div>`;cc.innerHTML=h;const d=document.getElementById("de");if(sT){const co=allC.find(c=>c.ticker===sT);if(co){document.getElementById("dT").textContent=co.flag+" "+co.ticker;document.getElementById("dP").textContent=co.chain+" › "+co.layer;document.getElementById("dN").textContent=co.note;d.className="det show"}}else d.className="det"}
+function sC(t){sT=sT===t?null:t;const co=allC.find(c=>c.ticker===t);if(co&&co.ck!==aC)aC=co.ck;rM()}
+function cD(){sT=null;rM()}
+function rF(){const ce=document.getElementById("fC");ce.innerHTML="";fCats.forEach(c=>{const b=document.createElement("button");b.className="fcat"+(aFC===c?" a":"");b.textContent=c;b.onclick=()=>{aFC=c;rF()};ce.appendChild(b)});fF()}
+function fF(){const q=(document.getElementById("fSe").value||"").toLowerCase();let f=F;if(aFC!=="全部")f=f.filter(x=>x.cat===aFC);if(q.length>1)f=f.filter(x=>x.q.toLowerCase().includes(q)||x.a.toLowerCase().includes(q));document.getElementById("fCn").textContent=`顯示 ${f.length} / ${F.length} 則`;document.getElementById("fL").innerHTML=f.map((x,i)=>`<div class="fqi" id="f${i}"><div class="fq" onclick="tF(${i})"><span class="fqt">${x.q}</span><span class="fqc">${x.cat}</span><span class="far">▼</span></div><div class="fa">${x.a}</div></div>`).join("")}
+function tF(i){document.getElementById("f"+i).classList.toggle("open")}
+document.getElementById("se").addEventListener("input",function(e){const q=e.target.value.toLowerCase();const b=document.getElementById("sR");if(q.length<2){b.className="sr";return}const r=allC.filter(c=>c.ticker.toLowerCase().includes(q)||c.note.toLowerCase().includes(q));if(!r.length){b.className="sr";return}b.className="sr show";b.innerHTML=r.slice(0,10).map(c=>`<div class="sri" onclick="document.getElementById('se').value='';document.getElementById('sR').className='sr';sC('${c.ticker.replace(/'/g,"\\'")}')"><b>${c.flag} ${c.ticker}</b><span class="m">${c.chain} › ${c.layer}</span></div>`).join("")});
+document.getElementById("iG").innerHTML=I.map(i=>`<div class="ic2"><p class="t">${i.title}</p><p class="d">${i.desc}</p></div>`).join("");
+rM();
+
+// WSB Sentiment Integration via Apewisdom API
+const WSB_TICKER_MAP = {
+  "NVIDIA":"NVDA","AMD":"AMD","Intel":"INTC","Micron":"MU","SNDK Sandisk":"SNDK",
+  "Marvell MRVL":"MRVL","Broadcom":"AVGO","Nokia NOK":"NOK","AAOI":"AAOI",
+  "SIVE":"SIVE","AXTI":"AXTI","SOI Soitec":"SOI","AEHR":"AEHR","Lumentum":"LITE",
+  "Qualcomm":"QCOM","Astera Labs":"ALAB","onsemi $ON":"ON",
+  "Vertiv $VRT":"VRT","IREN":"IREN","NBIS Nebius":"NBIS",
+  "Lam Research":"LRCX","AMAT":"AMAT","GlobalFoundries":"GFS",
+  "Corning / SCHOTT":"GLW","Lightmatter":"LITE"
+};
+const ANALYST_BULLISH = ["NVDA","MU","SNDK","MRVL","NOK","SIVE","AXTI","SOI","AAOI","AEHR","ON","LITE","AVGO","QCOM","LRCX","GFS","ALAB"];
+const NON_US = ["Murata 6981","SEMCO","Taiyo Yuden","TDK","SK Hynix","Samsung DS",
+  "欣興 3037","景碩 3189","臻鼎 4958","南電","聯發科 2454","鴻海 2317","台達電 2308",
+  "南亞科 2408","旺宏","華邦電","國巨 2327","華新科 2492","禾伸堂 3026",
+  "訊芯-KY 6451","FOCI 上詮 3363","MSScorp 6830","大立光 3008","穩懋","鈦昇科技 8027","德宏工業 5075",
+  "TEL 8035.JP","DISCO","Advantest","Ibiden","NGK 5333","Nittobo",
+  "後成 093370.KR","SKC Absolics 011790.KR","Innolux 群創",
+  "樂天能源材料","Mitsui Kinzoku / Co-Tech","松川精密 7788",
+  "IQE","EVG","LPKF","Kioxia","三環集團"];
+
+let wsbData = {};
+
+async function fetchWSB() {
+  try {
+    const r = await fetch("https://apewisdom.io/api/v1.0/filter/wallstreetbets/");
+    const d = await r.json();
+    if (d && d.results) {
+      d.results.forEach(item => { wsbData[item.ticker] = item; });
+      renderWSB();
+      updateBadges();
+    }
+  } catch(e) {
+    document.getElementById("wsbContent").innerHTML = '<p class="wsb-loading">⚠️ WSB 數據載入失敗（可能需要開啟網頁版查看）</p>';
+  }
+}
+
+function getWSBHeat(ticker) {
+  const d = wsbData[ticker];
+  if (!d) return {icon:"❄️", label:"沉默", mentions:0};
+  if (d.mentions >= 100) return {icon:"🔥🔥🔥", label:"極高", mentions:d.mentions};
+  if (d.mentions >= 30) return {icon:"🔥🔥", label:"高", mentions:d.mentions};
+  if (d.mentions >= 10) return {icon:"🔥", label:"中", mentions:d.mentions};
+  return {icon:"❄️", label:"低", mentions:d.mentions};
+}
+
+function renderWSB() {
+  let alphaItems = [];
+  let pricedItems = [];
+  let wsbHotNotTracked = [];
+
+  // Check our tracked US tickers
+  Object.entries(WSB_TICKER_MAP).forEach(([name, ticker]) => {
+    const heat = getWSBHeat(ticker);
+    const isBullish = ANALYST_BULLISH.includes(ticker);
+    if (isBullish && heat.mentions < 10) {
+      alphaItems.push({name, ticker, heat});
+    } else if (isBullish && heat.mentions >= 30) {
+      pricedItems.push({name, ticker, heat});
+    }
+  });
+
+  // Check WSB top 20 for tickers we don't track
+  const ourTickers = new Set(Object.values(WSB_TICKER_MAP));
+  const topWSB = Object.values(wsbData)
+    .sort((a,b) => b.mentions - a.mentions)
+    .slice(0, 25);
+  topWSB.forEach(item => {
+    if (!ourTickers.has(item.ticker) && item.mentions >= 30) {
+      wsbHotNotTracked.push(item);
+    }
+  });
+
+  let h = '<div class="wsb-grid">';
+
+  // Alpha column
+  h += '<div class="wsb-card alpha"><h4>🟢 潛在 Early Alpha（分析師看多 + WSB 沉默）</h4>';
+  if (alphaItems.length === 0) {
+    h += '<div class="wsb-item">目前沒有符合條件的標的</div>';
+  } else {
+    alphaItems.forEach(item => {
+      h += '<div class="wsb-item"><span class="tk">' + item.ticker + '</span> ' + item.heat.icon + ' ' + item.heat.mentions + ' 次提及</div>';
+    });
+  }
+  // Always show non-US stocks as alpha candidates
+  h += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid #27272a"><div class="wsb-item" style="color:#52525b">📌 以下為非美股，WSB 不覆蓋（天然 alpha 候選）：</div>';
+  h += '<div class="wsb-item"><span class="tk">Murata 6981</span> 📌觀察名單 ｜<span class="tk">鈦昇 8027</span> TGV ｜<span class="tk">後成 093370</span> WF6</div>';
+  h += '<div class="wsb-item"><span class="tk">欣興 3037</span> ABF ｜<span class="tk">聯發科 2454</span> TPU v9 ｜<span class="tk">NGK 5333</span> TFLN</div>';
+  h += '</div></div>';
+
+  // Priced-in column
+  h += '<div class="wsb-card priced"><h4>🟡 共識可能 Price In（分析師 + WSB 都看多）</h4>';
+  if (pricedItems.length === 0) {
+    h += '<div class="wsb-item">目前沒有符合條件的標的</div>';
+  } else {
+    pricedItems.forEach(item => {
+      h += '<div class="wsb-item"><span class="tk">' + item.ticker + '</span> ' + item.heat.icon + ' ' + item.heat.mentions + ' 次/24h</div>';
+    });
+  }
+  if (wsbHotNotTracked.length > 0) {
+    h += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid #27272a"><div class="wsb-item" style="color:#52525b">⚠️ WSB 熱門但我們沒追蹤（需判斷是噪音還是訊號）：</div>';
+    wsbHotNotTracked.slice(0, 5).forEach(item => {
+      h += '<div class="wsb-item"><span class="tk">' + item.ticker + '</span> 🔥 ' + item.mentions + ' 次/24h</div>';
+    });
+    h += '</div>';
+  }
+  h += '</div></div>';
+
+  document.getElementById("wsbContent").innerHTML = h;
+  document.getElementById("wsbTs").textContent = "資料來源：Apewisdom.io (WSB) ｜ 更新時間：" + new Date().toLocaleString("zh-TW");
+}
+
+function updateBadges() {
+  // Add WSB badges to company buttons in the map
+  document.querySelectorAll(".co").forEach(btn => {
+    const text = btn.textContent.trim();
+    Object.entries(WSB_TICKER_MAP).forEach(([name, ticker]) => {
+      if (text.includes(name.split(" ")[0]) || text.includes(ticker)) {
+        const heat = getWSBHeat(ticker);
+        if (!btn.querySelector(".wsb-badge")) {
+          const badge = document.createElement("span");
+          badge.className = "wsb-badge";
+          badge.textContent = heat.icon;
+          badge.title = "WSB " + heat.mentions + " 次提及/24h";
+          btn.appendChild(badge);
+        }
+      }
+    });
+  });
+}
+
+// Fetch WSB data on load
+fetchWSB();
+// Refresh every 30 minutes
+setInterval(fetchWSB, 30 * 60 * 1000);
+
+</script>
+</body>
+</html>
